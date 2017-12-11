@@ -26,13 +26,12 @@
 ** Currying/Partial application
 ** Tail calls
 ** Custom Operators
-** Higher Order Functions
-[%step]
-*** Sequential/Async
+** Higher Order Functions in both Sequential and Async modes
 
 == The Overview
 * Type System
 [%step]
+** Reference and Value types
 ** Strongly typed
 [%step]
 *** 23 <> 23.0
@@ -52,7 +51,7 @@
 ** Workflow/Monads
 
 * Workflows
-
+[%step]
 ** Sql
 ** Async
 ** ...
@@ -247,24 +246,17 @@ simple.Name
 ----
 
 
-== Type providers (SQL)
+== SQL Type providers + Workflows/Monads
 Inferred Types from Data
 ----
 type dbSchema = SqlDataConnection<"Data Source=MYSERVER\INSTANCE;Initial Catalog=MyDatabase;Integrated Security=SSPI;">
 let db = dbSchema.GetDataContext()
-
-// Enable the logging of database activity to the console.
-db.DataContext.Log <- System.Console.Out
-
+...
 let table1 = db.Table1
-----
-
-== Workflows/Monads
-----
 let query1 =
     query {
         for row in db.Table1 do
-        select row
+            select row
     }
 
 query1
@@ -280,68 +272,25 @@ query {
 == Quotation Expressions
 
 ----
-open Microsoft.FSharp.Quotations
-open Microsoft.FSharp.Quotations.Patterns
-open Microsoft.FSharp.Quotations.DerivedPatterns
-
+...
 let println expr =
     let rec print expr =
         match expr with
-        | Application(expr1, expr2) ->
-            // Function application.
-            print expr1
-            printf " "
-            print expr2
+        // Function application.
+        | Application(expr1, expr2) -> print expr1; printf " "; print expr2
+        // Matches a call to (+). Must appear before Call pattern.
         | SpecificCall <@@ (+) @@> (_, _, exprList) ->
-            // Matches a call to (+). Must appear before Call pattern.
             print exprList.Head
             printf " + "
             print exprList.Tail.Head
-        | Call(exprOpt, methodInfo, exprList) ->
-            // Method or module function call.
-            match exprOpt with
-            | Some expr -> print expr
-            | None -> printf "%s" methodInfo.DeclaringType.Name
-            printf ".%s(" methodInfo.Name
-            if (exprList.IsEmpty) then printf ")" else
-            print exprList.Head
-            for expr in exprList.Tail do
-                printf ","
-                print expr
-            printf ")"
-        | Int32(n) ->
-            printf "%d" n
-        | Lambda(param, body) ->
-            // Lambda expression.
-            printf "fun (%s:%s) -> " param.Name (param.Type.ToString())
-            print body
-        | Let(var, expr1, expr2) ->
-            // Let binding.
-            if (var.IsMutable) then
-                printf "let mutable %s = " var.Name
-            else
-                printf "let %s = " var.Name
-            print expr1
-            printf " in "
-            print expr2
-        | PropertyGet(_, propOrValInfo, _) ->
-            printf "%s" propOrValInfo.Name
-        | String(str) ->
-            printf "%s" str
-        | Value(value, typ) ->
-            printf "%s" (value.ToString())
-        | Var(var) ->
-            printf "%s" var.Name
-        | _ -> printf "%s" (expr.ToString())
+
+        ...
     print expr
     printfn ""
 
-
 let a = 2
 
-// exprLambda has type "(int -> int)".
 let exprLambda = <@ fun x -> x + 1 @>
-// exprCall has type unit.
 let exprCall = <@ a + 1 @>
 
 println exprLambda
@@ -362,16 +311,7 @@ let f = fun (x:System.Int32) -> x + 10 in f 10
 * link:https://fsharpforfunandprofit.com/posts/overview-of-types-in-fsharp/[F# for fun and profit]
 * link:http://fsharp.org/learn.html[F# learning resources]
 
-//== Code
-//latexmath:[X \in \{8, 16, 32, 64\}]
-//Hello World - Good Bye Cruel World
-//
-//[NOTE.speaker]
-//--
-//Actually things aren't that bad
-//--
-//
 //[%notitle]
-//== The Great Goat
+//== No Title
 //
 //image::https://upload.wikimedia.org/wikipedia/commons/b/b2/Hausziege_04.jpg[canvas,size=contain]
