@@ -1,0 +1,377 @@
+:stem:
+= F# Overview
+
+== The Overview
+[%step]
+* History
+[%step]
+** OCaml for .Net and a language for Data Scientists
+** Now General Purpose
+
+* Characteristics
+[%step]
+** Eager Functional
+[%step]
+*** Expressions
+*** Closures/Lambdas
+** Immutable by default
+** Object Oriented
+
+== The Overview
+* Characteristics
+[%step]
+** Concurrent
+** Modules and Declarations
+** Pattern matching
+** Currying/Partial application
+** Tail calls
+** Custom Operators
+** Higher Order Functions
+[%step]
+*** Sequential/Async
+
+== The Overview
+* Type System
+[%step]
+** Strongly typed
+[%step]
+*** 23 <> 23.0
+*** Hindley-Milner type inference
+*** units of measure
+
+** Generics/Type variables
+** Product types: Tuples and Records
+** Sum types/Union types/Discriminated unions
+
+== The Overview
+[%step]
+* Type System
+[%step]
+** Runtime Polymorphism via interfaces
+** Data Inferenced Types <Type Providers>
+** Workflow/Monads
+
+* Workflows
+
+** Sql
+** Async
+** ...
+
+== The Overview
+[%step]
+* Reflection
+[%step]
+** Data (using .Net)
+** Code (using Quotation Expression)
+** Allows you to remotely execute code
+
+* Transpilers
+[%step]
+** F# to JS -> Fable
+** F# to Erlang -> Fez
+** F# to OpenCL/C/C++ -> many tools
+
+== Data Types
+
+----
+Type = Unit
+     | Boolean
+     | Char
+     | Int/Unsigned Int (8, 16, 32, 64 bits)
+     | Single/Double (32/64 bits)
+     | List of Type
+     | Array of Type
+     | Sequence of Type
+     | Function of Type -> Type
+     | Tuple
+     | Record
+     | Union
+     | Type Provider
+     | Quotation
+----
+
+== Basic Data Assignment
+----
+let a = true
+let b = 'C'
+let i8 = 8y
+let ui8 = 8uy
+let i16 = 16s
+let ui16 = 16us
+let i = 32
+let li = 64L
+let f32 = 32.0f
+let f64 = 64.0
+let s = "This is a String"
+let a = [| 1; 2; 3; 4; 5 |]
+let l = [1; 2; 3; 4; 5 ]
+let s = { 1 .. 5 }
+let t = 10, "hello", true
+----
+
+== If Expressions
+----
+let mutable a = 10
+let b = if a < 5 then 5 + a else a - 5
+----
+ 
+== Functions
+----
+let f2 p0 p1 =
+    p1 + p2
+
+let f2 = fun p0 p1 -> p0 + p1
+
+let f3 = fun p0 -> fun p1 -> p0 + p1
+----
+
+== Custom Operators
+----
+let (|>!) a f = f a; a
+
+let logResult =
+    10
+    |>! printfn "%d"
+
+printfn "Result: %d" logResult
+----
+
+Output:
+----
+10
+Result: 10
+----
+== Pattern matching
+----
+let t = 10, "hello", true
+let v0 =
+    match t with
+    | 10, "hello", true -> printfn "Perfect match"
+    | _, "world", _ -> printfn "Only the world"
+    | _ -> failwith "doesn't work" 
+----
+
+Output:
+----
+Perfect match
+----
+
+== Pattern matching
+----
+let l = [ 1; 2; 3; 4; 5 ]
+match l with
+| 1 :: 2 :: 3 :: t -> printfn "%A" t
+| [] -> printfn "empty list"
+| _ -> failwith "can't handle that"
+----
+
+Output:
+----
+[4; 5]
+----
+
+== Higher order functions
+[%step]
+* map
+* iter
+* filter
+* fold
+* ...
+
+== Higher order functions
+----
+[| 1; 2; 3; 4; 5 |]
+|> Array.map (fun x -> x * 2)
+|> printfn "%A"
+----
+
+Output:
+----
+[|2; 4; 6; 8; 10|]
+----
+
+== Async Higher order functions
+----
+    let aa =
+        [| 1; 2; 3; 4; 5 |]
+        |> Array.map(fun x -> async {
+            return x * 2
+        })
+    aa
+    |> Async.Parallel
+    |> Async.RunSynchronously
+    |> printfn "%A"
+----
+
+Output:
+----
+[|2; 4; 6; 8; 10|]
+----
+
+== Units of measure
+Constrain values
+
+----
+type [<Measure>] cm;;
+type [<Measure>] m;;
+let cm2m (i: int<cm>) = (i / 100<cm>) * 1<m>;;
+100<cm> |> cm2m;;
+----
+
+Output:
+----
+val it : int<m> = 1
+----
+
+== Records
+----
+type Something = { name: string
+                   age : int }
+
+----
+
+== Unions
+----
+type U  = A of int
+        | B of string
+        | C
+----
+
+== Type providers
+Inferred Types from Data
+----
+type Simple = JsonProvider<""" { "name":"John", "age":94 } """>
+let simple = Simple.Parse(""" { "name":"Tomas", "age":4 } """)
+simple.Age
+simple.Name
+----
+
+
+== Type providers (SQL)
+Inferred Types from Data
+----
+type dbSchema = SqlDataConnection<"Data Source=MYSERVER\INSTANCE;Initial Catalog=MyDatabase;Integrated Security=SSPI;">
+let db = dbSchema.GetDataContext()
+
+// Enable the logging of database activity to the console.
+db.DataContext.Log <- System.Console.Out
+
+let table1 = db.Table1
+----
+
+== Workflows/Monads
+----
+let query1 =
+    query {
+        for row in db.Table1 do
+        select row
+    }
+
+query1
+|> Seq.iter (fun row -> printfn "%s %d" row.Name row.TestData1)
+
+query {
+   for row in db.Table1 do
+   where (row.TestData1 > 2)
+   select row
+} |> Seq.iter (fun row -> printfn "%d %s" row.TestData1 row.Name)
+----
+
+== Quotation Expressions
+
+----
+open Microsoft.FSharp.Quotations
+open Microsoft.FSharp.Quotations.Patterns
+open Microsoft.FSharp.Quotations.DerivedPatterns
+
+let println expr =
+    let rec print expr =
+        match expr with
+        | Application(expr1, expr2) ->
+            // Function application.
+            print expr1
+            printf " "
+            print expr2
+        | SpecificCall <@@ (+) @@> (_, _, exprList) ->
+            // Matches a call to (+). Must appear before Call pattern.
+            print exprList.Head
+            printf " + "
+            print exprList.Tail.Head
+        | Call(exprOpt, methodInfo, exprList) ->
+            // Method or module function call.
+            match exprOpt with
+            | Some expr -> print expr
+            | None -> printf "%s" methodInfo.DeclaringType.Name
+            printf ".%s(" methodInfo.Name
+            if (exprList.IsEmpty) then printf ")" else
+            print exprList.Head
+            for expr in exprList.Tail do
+                printf ","
+                print expr
+            printf ")"
+        | Int32(n) ->
+            printf "%d" n
+        | Lambda(param, body) ->
+            // Lambda expression.
+            printf "fun (%s:%s) -> " param.Name (param.Type.ToString())
+            print body
+        | Let(var, expr1, expr2) ->
+            // Let binding.
+            if (var.IsMutable) then
+                printf "let mutable %s = " var.Name
+            else
+                printf "let %s = " var.Name
+            print expr1
+            printf " in "
+            print expr2
+        | PropertyGet(_, propOrValInfo, _) ->
+            printf "%s" propOrValInfo.Name
+        | String(str) ->
+            printf "%s" str
+        | Value(value, typ) ->
+            printf "%s" (value.ToString())
+        | Var(var) ->
+            printf "%s" var.Name
+        | _ -> printf "%s" (expr.ToString())
+    print expr
+    printfn ""
+
+
+let a = 2
+
+// exprLambda has type "(int -> int)".
+let exprLambda = <@ fun x -> x + 1 @>
+// exprCall has type unit.
+let exprCall = <@ a + 1 @>
+
+println exprLambda
+println exprCall
+println <@@ let f x = x + 10 in f 10 @@>
+----
+
+Output:
+----
+fun (x:System.Int32) -> x + 1
+a + 1
+let f = fun (x:System.Int32) -> x + 10 in f 10
+----
+
+
+
+== References
+* link:https://fsharpforfunandprofit.com/posts/overview-of-types-in-fsharp/[F# for fun and profit]
+* link:http://fsharp.org/learn.html[F# learning resources]
+
+//== Code
+//latexmath:[X \in \{8, 16, 32, 64\}]
+//Hello World - Good Bye Cruel World
+//
+//[NOTE.speaker]
+//--
+//Actually things aren't that bad
+//--
+//
+//[%notitle]
+//== The Great Goat
+//
+//image::https://upload.wikimedia.org/wikipedia/commons/b/b2/Hausziege_04.jpg[canvas,size=contain]

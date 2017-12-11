@@ -1,0 +1,283 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>F# Overview</title><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" name="viewport"><link href="reveal.js/css/reveal.css" rel="stylesheet"><link rel="stylesheet" href="reveal.js/css/theme/black.css" id="theme"><script type="text/x-mathjax-config">MathJax.Hub.Config({
+tex2jax: {
+  inlineMath: [["\\(", "\\)"]],
+  displayMath: [["\\[", "\\]"]],
+  ignoreClass: "nostem|nolatexmath"
+},
+asciimath2jax: {
+  delimiters: [["\\$", "\\$"]],
+  ignoreClass: "nostem|noasciimath"
+},
+TeX: { equationNumbers: { autoNumber: "none" } }
+});</script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.4.0/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script><link href="reveal.js/lib/css/zenburn.css" rel="stylesheet"><script>document.write( '<link rel="stylesheet" href="reveal.js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );</script></head><body><div class="reveal"><div class="slides"><section class="title" data-state="title"><h1>F# Overview</h1></section><section id="_the_overview"><h2>The Overview</h2><div class="ulist"><ul><li class="fragment"><p>History</p><div class="ulist"><ul><li class="fragment"><p>OCaml for .Net and a language for Data Scientists</p></li><li class="fragment"><p>Now General Purpose</p></li></ul></div></li><li class="fragment"><p>Characteristics</p><div class="ulist"><ul><li class="fragment"><p>Eager Functional</p><div class="ulist"><ul><li class="fragment"><p>Expressions</p></li><li class="fragment"><p>Closures/Lambdas</p></li></ul></div></li><li class="fragment"><p>Immutable by default</p></li><li class="fragment"><p>Object Oriented</p></li></ul></div></li></ul></div></section>
+<section id="_the_overview_2"><h2>The Overview</h2><div class="ulist"><ul><li><p>Characteristics</p><div class="ulist"><ul><li class="fragment"><p>Concurrent</p></li><li class="fragment"><p>Modules and Declarations</p></li><li class="fragment"><p>Pattern matching</p></li><li class="fragment"><p>Currying/Partial application</p></li><li class="fragment"><p>Tail calls</p></li><li class="fragment"><p>Custom Operators</p></li><li class="fragment"><p>Higher Order Functions</p><div class="ulist"><ul><li class="fragment"><p>Sequential/Async</p></li></ul></div></li></ul></div></li></ul></div></section>
+<section id="_the_overview_3"><h2>The Overview</h2><div class="ulist"><ul><li><p>Type System</p><div class="ulist"><ul><li class="fragment"><p>Strongly typed</p><div class="ulist"><ul><li class="fragment"><p>23 &lt;&gt; 23.0</p></li><li class="fragment"><p>Hindley-Milner type inference</p></li><li class="fragment"><p>units of measure</p></li></ul></div></li><li class="fragment"><p>Generics/Type variables</p></li><li class="fragment"><p>Product types: Tuples and Records</p></li><li class="fragment"><p>Sum types/Union types/Discriminated unions</p></li></ul></div></li></ul></div></section>
+<section id="_the_overview_4"><h2>The Overview</h2><div class="ulist"><ul><li class="fragment"><p>Type System</p><div class="ulist"><ul><li class="fragment"><p>Runtime Polymorphism via interfaces</p></li><li class="fragment"><p>Date Inferenced Types &lt;Type Providers&gt;</p></li><li class="fragment"><p>Workflow/Monads</p></li></ul></div></li><li class="fragment"><p>Workflows</p><div class="ulist"><ul><li><p>Sql</p></li><li><p>Async</p></li><li><p>&#8230;&#8203;</p></li></ul></div></li></ul></div></section>
+<section id="_the_overview_5"><h2>The Overview</h2><div class="ulist"><ul><li class="fragment"><p>Reflection</p><div class="ulist"><ul><li class="fragment"><p>Data (using .Net)</p></li><li class="fragment"><p>Code (using Quotation Expression)</p></li><li class="fragment"><p>Allows you to remotely execute code</p></li></ul></div></li><li class="fragment"><p>Transpilers</p><div class="ulist"><ul><li class="fragment"><p>F# to JS &#8594; Fable</p></li><li class="fragment"><p>F# to Erlang &#8594; Fez</p></li><li class="fragment"><p>F# to OpenCL/C/C++ &#8594; many tools</p></li></ul></div></li></ul></div></section>
+<section id="_data_types"><h2>Data Types</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>Type = Unit
+     | Boolean
+     | Char
+     | Int/Unsigned Int (8, 16, 32, 64 bits)
+     | Single/Double (32/64 bits)
+     | List of Type
+     | Array of Type
+     | Sequence of Type
+     | Function of Type -&gt; Type
+     | Tuple
+     | Record
+     | Union
+     | Type Provider
+     | Quotation</code></pre></div></div></section>
+<section id="_basic_data_assignment"><h2>Basic Data Assignment</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>let a = true
+let b = 'C'
+let i8 = 8y
+let ui8 = 8uy
+let i16 = 16s
+let ui16 = 16us
+let i = 32
+let li = 64L
+let f32 = 32.0f
+let f64 = 64.0
+let s = "This is a String"
+let a = [| 1; 2; 3; 4; 5 |]
+let l = [1; 2; 3; 4; 5 ]
+let s = { 1 .. 5 }
+let t = 10, "hello", true</code></pre></div></div></section>
+<section id="_if_expressions"><h2>If Expressions</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>let mutable a = 10
+let b = if a &lt; 5 then 5 + a else a - 5</code></pre></div></div></section>
+<section id="_functions"><h2>Functions</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>let f2 p0 p1 =
+    p1 + p2
+
+let f2 = fun p0 p1 -&gt; p0 + p1
+
+let f3 = fun p0 -&gt; fun p1 -&gt; p0 + p1</code></pre></div></div></section>
+<section id="_custom_operators"><h2>Custom Operators</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>let (|&gt;!) a f = f a; a
+
+let logResult =
+    10
+    |&gt;! printfn "%d"
+
+printfn "Result: %d" logResult</code></pre></div></div>
+<div class="paragraph"><p>Output:</p></div>
+<div class="listingblock"><div class="content"><pre class="highlight"><code>10
+Result: 10</code></pre></div></div></section>
+<section id="_pattern_matching"><h2>Pattern matching</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>let t = 10, "hello", true
+let v0 =
+    match t with
+    | 10, "hello", true -&gt; printfn "Perfect match"
+    | _, "world", _ -&gt; printfn "Only the world"
+    | _ -&gt; failwith "doesn't work"</code></pre></div></div>
+<div class="paragraph"><p>Output:</p></div>
+<div class="listingblock"><div class="content"><pre class="highlight"><code>Perfect match</code></pre></div></div></section>
+<section id="_pattern_matching_2"><h2>Pattern matching</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>let l = [ 1; 2; 3; 4; 5 ]
+match l with
+| 1 :: 2 :: 3 :: t -&gt; printfn "%A" t
+| [] -&gt; printfn "empty list"
+| _ -&gt; failwith "can't handle that"</code></pre></div></div>
+<div class="paragraph"><p>Output:</p></div>
+<div class="listingblock"><div class="content"><pre class="highlight"><code>[4; 5]</code></pre></div></div></section>
+<section id="_higher_order_functions"><h2>Higher order functions</h2><div class="ulist"><ul><li class="fragment"><p>map</p></li><li class="fragment"><p>iter</p></li><li class="fragment"><p>filter</p></li><li class="fragment"><p>fold</p></li><li class="fragment"><p>&#8230;&#8203;</p></li></ul></div></section>
+<section id="_higher_order_functions_2"><h2>Higher order functions</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>[| 1; 2; 3; 4; 5 |]
+|&gt; Array.map (fun x -&gt; x * 2)
+|&gt; printfn "%A"</code></pre></div></div>
+<div class="paragraph"><p>Output:</p></div>
+<div class="listingblock"><div class="content"><pre class="highlight"><code>[|2; 4; 6; 8; 10|]</code></pre></div></div></section>
+<section id="_async_higher_order_functions"><h2>Async Higher order functions</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>    let aa =
+        [| 1; 2; 3; 4; 5 |]
+        |&gt; Array.map(fun x -&gt; async {
+            return x * 2
+        })
+    aa
+    |&gt; Async.Parallel
+    |&gt; Async.RunSynchronously
+    |&gt; printfn "%A"</code></pre></div></div>
+<div class="paragraph"><p>Output:</p></div>
+<div class="listingblock"><div class="content"><pre class="highlight"><code>[|2; 4; 6; 8; 10|]</code></pre></div></div></section>
+<section id="_units_of_measure"><h2>Units of measure</h2><div class="paragraph"><p>Constrain values</p></div>
+<div class="listingblock"><div class="content"><pre class="highlight"><code>type [&lt;Measure&gt;] cm;;
+type [&lt;Measure&gt;] m;;
+let cm2m (i: int&lt;cm&gt;) = (i / 100&lt;cm&gt;) * 1&lt;m&gt;;;
+100&lt;cm&gt; |&gt; cm2m;;</code></pre></div></div>
+<div class="paragraph"><p>Output:</p></div>
+<div class="listingblock"><div class="content"><pre class="highlight"><code>val it : int&lt;m&gt; = 1</code></pre></div></div></section>
+<section id="_records"><h2>Records</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>type Something = { name: string
+                   age : int }</code></pre></div></div></section>
+<section id="_unions"><h2>Unions</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>type U  = A of int
+        | B of string
+        | C</code></pre></div></div></section>
+<section id="_type_providers"><h2>Type providers</h2><div class="paragraph"><p>Inferred Types from Data</p></div>
+<div class="listingblock"><div class="content"><pre class="highlight"><code>type Simple = JsonProvider&lt;""" { "name":"John", "age":94 } """&gt;
+let simple = Simple.Parse(""" { "name":"Tomas", "age":4 } """)
+simple.Age
+simple.Name</code></pre></div></div></section>
+<section id="_type_providers_sql"><h2>Type providers (SQL)</h2><div class="paragraph"><p>Inferred Types from Data</p></div>
+<div class="listingblock"><div class="content"><pre class="highlight"><code>type dbSchema = SqlDataConnection&lt;"Data Source=MYSERVER\INSTANCE;Initial Catalog=MyDatabase;Integrated Security=SSPI;"&gt;
+let db = dbSchema.GetDataContext()
+
+// Enable the logging of database activity to the console.
+db.DataContext.Log &lt;- System.Console.Out
+
+let table1 = db.Table1</code></pre></div></div></section>
+<section id="_workflows_monads"><h2>Workflows/Monads</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>let query1 =
+    query {
+        for row in db.Table1 do
+        select row
+    }
+
+query1
+|&gt; Seq.iter (fun row -&gt; printfn "%s %d" row.Name row.TestData1)
+
+query {
+   for row in db.Table1 do
+   where (row.TestData1 &gt; 2)
+   select row
+} |&gt; Seq.iter (fun row -&gt; printfn "%d %s" row.TestData1 row.Name)</code></pre></div></div></section>
+<section id="_quotation_expressions"><h2>Quotation Expressions</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>open Microsoft.FSharp.Quotations
+open Microsoft.FSharp.Quotations.Patterns
+open Microsoft.FSharp.Quotations.DerivedPatterns
+
+let println expr =
+    let rec print expr =
+        match expr with
+        | Application(expr1, expr2) -&gt;
+            // Function application.
+            print expr1
+            printf " "
+            print expr2
+        | SpecificCall &lt;@@ (+) @@&gt; (_, _, exprList) -&gt;
+            // Matches a call to (+). Must appear before Call pattern.
+            print exprList.Head
+            printf " + "
+            print exprList.Tail.Head
+        | Call(exprOpt, methodInfo, exprList) -&gt;
+            // Method or module function call.
+            match exprOpt with
+            | Some expr -&gt; print expr
+            | None -&gt; printf "%s" methodInfo.DeclaringType.Name
+            printf ".%s(" methodInfo.Name
+            if (exprList.IsEmpty) then printf ")" else
+            print exprList.Head
+            for expr in exprList.Tail do
+                printf ","
+                print expr
+            printf ")"
+        | Int32(n) -&gt;
+            printf "%d" n
+        | Lambda(param, body) -&gt;
+            // Lambda expression.
+            printf "fun (%s:%s) -&gt; " param.Name (param.Type.ToString())
+            print body
+        | Let(var, expr1, expr2) -&gt;
+            // Let binding.
+            if (var.IsMutable) then
+                printf "let mutable %s = " var.Name
+            else
+                printf "let %s = " var.Name
+            print expr1
+            printf " in "
+            print expr2
+        | PropertyGet(_, propOrValInfo, _) -&gt;
+            printf "%s" propOrValInfo.Name
+        | String(str) -&gt;
+            printf "%s" str
+        | Value(value, typ) -&gt;
+            printf "%s" (value.ToString())
+        | Var(var) -&gt;
+            printf "%s" var.Name
+        | _ -&gt; printf "%s" (expr.ToString())
+    print expr
+    printfn ""
+
+
+let a = 2
+
+// exprLambda has type "(int -&gt; int)".
+let exprLambda = &lt;@ fun x -&gt; x + 1 @&gt;
+// exprCall has type unit.
+let exprCall = &lt;@ a + 1 @&gt;
+
+println exprLambda
+println exprCall
+println &lt;@@ let f x = x + 10 in f 10 @@&gt;</code></pre></div></div>
+<div class="paragraph"><p>Output:</p></div>
+<div class="listingblock"><div class="content"><pre class="highlight"><code>fun (x:System.Int32) -&gt; x + 1
+a + 1
+let f = fun (x:System.Int32) -&gt; x + 10 in f 10</code></pre></div></div></section>
+<section id="_references"><h2>References</h2><div class="ulist"><ul><li><p><a href="https://fsharpforfunandprofit.com/posts/overview-of-types-in-fsharp/">F# for fun and profit</a></p></li><li><p><a href="http://fsharp.org/learn.html">F# learning resources</a></p></li></ul></div></section></div></div><script src="reveal.js/lib/js/head.min.js"></script><script src="reveal.js/js/reveal.js"></script><script>// See https://github.com/hakimel/reveal.js#configuration for a full list of configuration options
+Reveal.initialize({
+  // Display controls in the bottom right corner
+  controls: true,
+  // Display a presentation progress bar
+  progress: true,
+  // Display the page number of the current slide
+  slideNumber: false,
+  // Push each slide change to the browser history
+  history: false,
+  // Enable keyboard shortcuts for navigation
+  keyboard: true,
+  // Enable the slide overview mode
+  overview: true,
+  // Vertical centering of slides
+  center: true,
+  // Enables touch navigation on devices with touch input
+  touch: true,
+  // Loop the presentation
+  loop: false,
+  // Change the presentation direction to be RTL
+  rtl: false,
+  // Turns fragments on and off globally
+  fragments: true,
+  // Flags if the presentation is running in an embedded mode,
+  // i.e. contained within a limited portion of the screen
+  embedded: false,
+  // Number of milliseconds between automatically proceeding to the
+  // next slide, disabled when set to 0, this value can be overwritten
+  // by using a data-autoslide attribute on your slides
+  autoSlide: 0,
+  // Stop auto-sliding after user input
+  autoSlideStoppable: true,
+  // Enable slide navigation via mouse wheel
+  mouseWheel: false,
+  // Hides the address bar on mobile devices
+  hideAddressBar: true,
+  // Opens links in an iframe preview overlay
+  previewLinks: false,
+  // Theme (e.g., beige, black, league, night, serif, simple, sky, solarized, white)
+  // NOTE setting the theme in the config no longer works in reveal.js 3.x
+  //theme: Reveal.getQueryHash().theme || 'black',
+  // Transition style (e.g., none, fade, slide, convex, concave, zoom)
+  transition: Reveal.getQueryHash().transition || 'slide',
+  // Transition speed (e.g., default, fast, slow)
+  transitionSpeed: 'default',
+  // Transition style for full page slide backgrounds (e.g., none, fade, slide, convex, concave, zoom)
+  backgroundTransition: 'fade',
+  // Number of slides away from the current that are visible
+  viewDistance: 3,
+  // Parallax background image (e.g., "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'")
+  parallaxBackgroundImage: '',
+  // Parallax background size in CSS syntax (e.g., "2100px 900px")
+  parallaxBackgroundSize: '',
+
+  // The "normal" size of the presentation, aspect ratio will be preserved
+  // when the presentation is scaled to fit different resolutions. Can be
+  // specified using percentage units.
+  width: 960,
+  height: 700,
+
+  // Factor of the display size that should remain empty around the content
+  margin: 0.1,
+
+  // Bounds for smallest/largest possible scale to apply to content
+  minScale: 0.2,
+  maxScale: 1.5,
+
+  // Optional libraries used to extend on reveal.js
+  dependencies: [
+      { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+      { src: 'reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      
+      { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+      { src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+  ]
+});</script></body></html>
